@@ -1687,5 +1687,48 @@ Don't use Redux for small apps.
         </li>
       </ul>
     </ul>
+    <ul>
+      <li>
+        <h1>
+          Working with Redux (first we make different demo without react but
+          with node)
+        </h1>
+      </li>
+      <ul>
+        <li>1. npm init -y</li>
+        <li>2. npm install redux</li>
+        <li>3. import in node Const redux = require('redux');</li>
+        <li>We need to setup all 4 basic things:</li>
+        <ul>
+          <li>1. Reducer (this reducer is different from Reducer Hook)</li>
+          <li>2. Store</li>
+          <li>3. Subscribe</li>
+          <li>4. Actions</li>
+        </ul>
+        <li>5. Node redux-demo.js command to run node server</li>
+      </ul>
+    </ul>
+    <h1>React With Redux</h1>
+    <ul>
+      <li>npm install redux</li>
+      <li>npm install react-redux</li>
+      <li>create store folder with index.js file</li>
+      <li>Creating the store using import {createStore} from 'redux'</li>
+      <li>Providing the store with react</li>
+      <ul>
+        <li>1. Provider from react-redux</li>
+        <li>2. &lt;Provider store={store}&gt;&lt;App/&gt;&lt;/Provider&gt;</li>
+      </ul>
+      <li>Using the store</li>
+      <ul>
+        <li>1. useSelector hook gets a slice of the store</li>
+        <li>Const counter = useSelector((state) => state.counter)</li>
+        <li>
+          2. Subscription is already setup and only will re-execute when only
+          your slice is changed. Subscription is automatically cleaned up
+        </li>
+      </ul>
+      <li>Dispatch Actions using useDispatch hook</li>
+    </ul>
   </body>
 </html>
