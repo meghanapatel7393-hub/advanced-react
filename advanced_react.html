@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced React</title>
+  </head>
+  <body>
+    <h1>Notes</h1>
+    <p>start project from command</p>
+    <p>npm create vite@latest</p>
+    <p>complete project setup and run - npm run dev</p>
+    <p>install bootstrap: npm install bootstrap@5.3.8</p>
+    <p>install React Icon : npm install react-icons --save</p>
+
+    <ul>
+      <li><h1>Data fetching using fetch</h1></li>
+      <ul>
+        <li>fetch : Modern Javascript API for network request.</li>
+        <li>Promise-Based: Return a Promise with a response object</li>
+        <li>Usage : Default is GET. for POST user Method: 'POST'</li>
+        <li>Response: Use .then() and response.json() for JSON data</li>
+        <li>Errors: Doesn't reject on HTTP errors. check response.ok</li>
+        <li>Headers: managed using the Headers API</li>
+      </ul>
+    </ul>
+
+    <ul>
+      <li><h1>The useEffect Hook</h1></li>
+      <ul>
+        <li>
+          useEffect is a React hook used to run side effects in a component.
+        </li>
+        <li>
+          In Function-based components, useEffect handles side effects like data
+          fetching or event listners.
+        </li>
+        <li>useEffect runs automatically after every render by default.</li>
+        <li>
+          By providing a dependency array, useEffect will only run when
+          specified variables change. and empty array means the effect run's
+          once
+        </li>
+        <li>
+          Multiple useEffect hooks can be used in a single component for
+          organizing different side effects separately
+        </li>
+        <li>
+          when we pass second argument as [], useEffect will run only once
+        </li>
+
+        <li>
+          when we pass second argument as [variable1, variable2], useEffect will
+          run when variable1 or variable2 changes
+        </li>
+        <li>
+          when we pass second argument as ..nothing.., useEffect will run on
+          every render
+        </li>
+        <ul>
+          <li><h1>What is a side effect?</h1></li>
+          <ul>
+            <li>
+              Anything that happens outside the normal UI rendering, such as:
+            </li>
+            <li>Fetching API data</li>
+            <li>Changing the document title</li>
+            <li>Setting timers (setTimeout / setInterval)</li>
+            <li>Adding event listeners</li>
+            <li>Working with localStorage</li>
+            <li>Cleaning up (remove listeners, stop timers)</li>
+          </ul>
+        </ul>
+        <ul>
+          <li><h1>Basic Syntax</h1></li>
+          <li>useEffect(() =&gt; { // code to run }, [dependencies]);</li>
+        </ul>
+        <ul>
+          <li><h1>🧩 How useEffect Works?</h1></li>
+          <ul>
+            <li><h1>✔ 1. Runs when component loads (mount)</h1></li>
+            <li>
+              useEffect(() =&gt; { console.log("Component loaded"); }, []);
+            </li>
+            <li>👉 Runs only once.</li>
+          </ul>
+          <ul>
+            <li><h1>✔ 2. Runs when state/prop changes</h1></li>
+            <li>
+              useEffect(() =&gt; { console.log("Count changed"); }, [count]);
+            </li>
+            <li>👉 Runs every time count changes.</li>
+          </ul>
+          <ul>
+            <li><h1>3. Runs on every render</h1></li>
+            <li>useEffect(() =&gt; { console.log("Render happened"); });</li>
+            <li>👉 No dependency → runs every time component renders.</li>
+          </ul>
+          <ul>
+            <li><h1>✔ 4. Cleanup (remove listeners / stop timer)</h1></li>
+            <li>
+              <pre>
+useEffect(() => {
+  const timer = setInterval(() => {
+    console.log("running...");
+  }, 1000);
+
+  return () => {
+    clearInterval(timer); // cleanup
+  };
+}, []);
+</pre
+              >
+            </li>
+            <li>👉 Cleanup runs when component unmounts.</li>
+            <li>
+              this is CleanUp function. used to remove side effects from
+              component when it unmount. unmount means when component removed
+              from DOM
+            </li>
+          </ul>
+          <ul>
+            <li><h1>🔥 Example: Fetch API using useEffect</h1></li>
+            <li>
+              <pre>
+import { useEffect, useState } from "react";
+
+function Users() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() =&gt; {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then(res => res.json())
+      .then(data => setUsers(data));
+  }, []); // run only once
+
+  return (
+    &lt;&gt;
+      &lt;h1&gt;Users List&lt;/h1&gt;
+      {users.map(user =&gt; (
+        &lt;p key={user.id}&gt;{user.name}&lt;/p&gt;
+      ))}
+    &lt;/&gt;
+  );
+}
+</pre
+              >
+            </li>
+          </ul>
+        </ul>
+      </ul>
+    </ul>
+
+    <ul>
+      <li><h1>The useCallback Hook</h1></li>
+      <ul>
+        <li>
+          Memoization: Preserves function across renders to prevent unnecessary
+          re-rendeds.
+        </li>
+        <li>
+          Optimization: Enhances performance in components with frequent
+          updates.
+        </li>
+        <li>
+          Dependency Array: Recreates the function only when specific
+          dependencies change.
+        </li>
+        <li>
+          Event Handlers: Used to keep consistent function references for child
+          components.
+        </li>
+        <li>
+          With useEffect: Prevent infinite loops by maintaining function
+          references
+        </li>
+        <li>
+          useCallback is a React hook that memoizes a function — meaning it
+          remembers the function and only recreates it when needed.
+        </li>
+        <li>
+          This helps avoid unnecessary re-renders, especially when passing
+          functions to child components.
+        </li>
+        <li><h1>Basic Syntax</h1></li>
+        <ul>
+          <li>
+            <pre>
+const memoizedFunction = useCallback(() =&gt; {
+  // your function code
+}, [dependencies]);</pre
+            >
+          </li>
+        </ul>
+        <li><h1>Why do we need useCallback?</h1></li>
+        <li>In React:</li>
+        <ul>
+          <li>
+            Every time a component re-renders, all functions are recreated.
+          </li>
+          <li>
+            If you pass such a function to a child component, it causes
+            unnecessary re-renders.
+          </li>
+        </ul>
+        <li>
+          <h4>
+            useCallback prevents this. (above 2 point prevent by useCallback)
+          </h4>
+        </li>
+        <li><h1>⭐ Simple Example</h1></li>
+        <ul>
+          <li>
+            <pre>
+import { useState, useCallback } from "react";
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  const handleClick = useCallback(() => {
+    console.log("clicked");
+  }, []); // runs once
+
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}>Increase&lt;/button&gt;
+      &lt;Child onClick={handleClick} /&gt;
+    &lt;/&gt;
+  );
+}
+
+function Child({ onClick }) {
+  console.log("Child rendered");
+  return &lt;button onClick={onClick}&gt;Child Button&lt;/button&gt;;
+}
+</pre
+            >
+          </li>
+          <ul>
+            <li><h3>Without useCallback:</h3></li>
+            <li>handleClick is a new function every render</li>
+            <li>Child re-renders every time</li>
+          </ul>
+          <ul>
+            <li><h3>With useCallback:</h3></li>
+            <li>Function is saved/memoized</li>
+            <li>Child re-renders only when needed</li>
+          </ul>
+          <ul>
+            <li><h3>🔥 Example with Dependencies</h3></li>
+            <li>
+              <pre>
+const handleAdd = useCallback(() => {
+  setItems(prev => [...prev, "New Item"]);
+}, [items]);
+</pre
+              >
+            </li>
+            <li><h4>handleAdd will change only when items changes.</h4></li>
+          </ul>
+        </ul>
+        <ul>
+          <li><h1>When to Use useCallback?</h1></li>
+          <ul>
+            <li>
+              ✔ Passing functions to memoized child components (React.memo)
+            </li>
+            <li>✔ Preventing re-renders</li>
+            <li>✔ Expensive functions you don't want to recreate often</li>
+          </ul>
+          <li><h1>⚠ When NOT to use it?</h1></li>
+          <ul>
+            <li>❌ Don’t use it everywhere</li>
+            <li>❌ Don’t use it for simple small functions</li>
+            <li>❌ It adds overhead if used unnecessarily</li>
+          </ul>
+          <li>
+            <h4>
+              Only use when you have performance issue or child depends on same
+              function instance.
+            </h4>
+          </li>
+        </ul>
+      </ul>
+    </ul>
+    <ul>
+      <li>
+        <pre>
+| Hook          | Purpose                                |
+| ------------- | -------------------------------------- |
+| `useState`    | Manage state                           |
+| `useRef`      | Store values without re-render         |
+| `useEffect`   | Run side effects                       |
+| `useCallback` | Memoize functions to prevent re-render |
+</pre
+        >
+      </li>
+    </ul>
+    <ul>
+      <li><h1>useMemo Hook</h1></li>
+      <li><h2>What is useMemo?</h2></li>
+      <ul>
+        <li>
+          useMemo is a React hook used to memoize (save) a calculated value so
+          React doesn’t recompute it every time the component re-renders.
+        </li>
+        <li>It is useful when the calculation is heavy or expensive.</li>
+      </ul>
+      <ul>
+        <li>
+          Memoization: useMemo caches the result of expensive calculations to
+          enhance performance.
+        </li>
+        <li>
+          Re-computation: Only re-computes the memoized value when specific
+          dependencies change.
+        </li>
+        <li>
+          Optimization: Helps prevent unnecessary recalculations, improving
+          component rendering efficiency.
+        </li>
+        <li>
+          Dependency Array: Uses as Array of dependencies to determine when to
+          recompute the cached value.
+        </li>
+        <li>
+          COmpatison with useCallback: while useCallback memoizes function ,
+          useMemo memoizes values or result of functions.
+        </li>
+        <li>
+          best Use: ideal for intensive computations or operations that
+          shouldn't run on every render.
+        </li>
+      </ul>
+      <li><h2>🔥 Basic Syntax</h2></li>
+      <ul>
+        <li>
+          <pre>
+const memoizedValue = useMemo(() =&gt; {
+  return computeSomething();
+}, [dependencies]);
+</pre
+          >
+        </li>
+        <li>React will recalculate the value only when dependencies change.</li>
+        <li>Otherwise, it returns the saved (memoized) value.</li>
+      </ul>
+      <li><h2>⭐ Simple Example</h2></li>
+      <ul>
+        <li>
+          <pre>
+import { useState, useMemo } from "react";
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  const expensiveCalculation = (num) => {
+    console.log("Running heavy calculation...");
+    return num * 2;
+  };
+
+  const result = useMemo(() => expensiveCalculation(count), [count]);
+
+  return (
+    &lt;&gt;
+      &lt;h2>Count: {count}&lt;/h2&gt;
+      &lt;h2>Result: {result}&lt;/h2&gt;
+
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;Increase&lt;/button&gt;
+    &lt;/&gt;
+  );
+}
+
+          </pre>
+        </li>
+        <li><h3>Without useMemo:</h3></li>
+        <ul>
+          <li>expensiveCalculation runs on every render.</li>
+        </ul>
+        <li><h3>With useMemo:</h3></li>
+        <ul>
+          <li>Runs only when count changes.</li>
+          <li>Saves performance.</li>
+          <li>Recomputes only when dependencies change</li>
+        </ul>
+        <li><h3>When to use useMemo?</h3></li>
+        <ul>
+          <li>Use it for memoizing values, not functions.</li>
+          <li>✔ Expensive calculations</li>
+          <li>✔ Filtering large lists</li>
+          <li>✔ Sorting data</li>
+          <li>✔ Preventing slow operations from running every render</li>
+          <li>
+            Example:
+            <pre>
+const filteredList = useMemo(() =&gt; {
+  return list.filter(item =&gt; item.includes(search));
+}, [list, search]);
+</pre
+            >
+          </li>
+        </ul>
+      </ul>
+    </ul>
+    <ul>
+      <li><h1>🧠 useMemo vs useCallback</h1></li>
+      <ul>
+        <li>
+          <pre>
+| Hook            | Memoizes | Used For                    |
+| --------------- | -------- | --------------------------- |
+| **useMemo**     | Value    | Expensive calculations      |
+| **useCallback** | Function | Prevent function recreation |
+
+          </pre>
+        </li>
+        <li>useMemo → Stores calculated RESULT</li>
+        <li>useCallback → Stores FUNCTION</li>
+        <li><h2>❗ When NOT to use useMemo?</h2></li>
+        <ul>
+          <li>❌ Do not use for simple calculations</li>
+          <li>❌ Do not use everywhere (adds overhead)</li>
+          <li>❌ Use only when performance matters</li>
+        </ul>
+      </ul>
+    </ul>
+
+    <ul>
+      <li><h1>Custom Hooks</h1></li>
+      <li><h2>What are Custom Hooks?</h2></li>
+      <ul>
+        <li>
+          A Custom Hook is a JavaScript function that uses React hooks
+          (useState, useEffect, useRef, etc.) and allows you to reuse logic
+          across multiple components.
+        </li>
+        <li>
+          ✔ If you ever write the same logic in multiple components → create a
+          custom hook.
+        </li>
+      </ul>
+      <br />
+      <ul>
+        <li>
+          Reusable Logic: custom hooks allow you to extract and reuse component
+          logic across multiple components.
+        </li>
+        <li>
+          Naming Convention: Typically start with "use" (e.g.
+          useWindowSize,useFetch)
+        </li>
+        <li>
+          Combining Hooks: Custom hooks can combine multiple built-in hooks like
+          useState, useEffect and other hooks.
+        </li>
+        <li>
+          Sharing State: Enables sharing of stateful logic without changing
+          component hierarchy
+        </li>
+        <li>
+          isolation: Helps in isolating complex logic, making components cleane
+          and easier to maintain.
+        </li>
+        <li>
+          Custom Return Values: Can return any value (array, objects, or any
+          other data type) based on requirements.
+        </li>
+      </ul>
+      <li><h2>🔥 Why create Custom Hooks?</h2></li>
+      <ul>
+        <li>Avoid repeating code (DRY principle)</li>
+        <li>Make components cleaner and smaller</li>
+        <li>Share logic between components easily</li>
+        <li>Improve readability and maintainability</li>
+      </ul>
+      <li><h2>🧩 Rules of Custom Hooks</h2></li>
+      <ul>
+        <li>1️⃣ Name must start with use</li>
+        <li>Example: useFetch, useToggle, useLocalStorage</li>
+        <li>2️⃣ Must use at least one React hook inside</li>
+        <li>3️⃣ Follow normal hook rules:</li>
+        <ul>
+          <li>Only call at top level</li>
+          <li>Only call inside React component or another hook</li>
+        </ul>
+      </ul>
+      <ul>
+        <li><h1>⭐ Simple Custom Hook Example: useToggle</h1></li>
+        <ul>
+          <li>
+            useToggle.js
+            <pre>
+import { useState } from "react";
+
+export function useToggle(initialValue = false) {
+  const [value, setValue] = useState(initialValue);
+
+  const toggle = () => setValue(prev => !prev);
+
+  return [value, toggle];
+}
+</pre
+            >
+          </li>
+          📁 Using it in a component
+          <li>
+            <pre>
+import { useToggle } from "./useToggle";
+
+function App() {
+  const [isOpen, toggleOpen] = useToggle();
+
+  return (
+    &lt;&gt;
+      &lt;p&gt;Open: {isOpen.toString()}&lt;/p&gt;
+      &lt;button onClick={toggleOpen}&gt;Toggle&lt;/button&gt;
+    &lt;/&gt;
+  );
+}
+</pre
+            >
+          </li>
+        </ul>
+      </ul>
+      <ul>
+        <li><h1>⭐ Custom Hook Example: useFetch</h1></li>
+        <ul>
+          <li>
+            <pre>
+import { useEffect, useState } from "react";
+
+export function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(url)
+      .then(res => res.json())
+      .then(result => {
+        setData(result);
+        setLoading(false);
+      });
+  }, [url]);
+
+  return { data, loading };
+}
+
+
+            </pre>
+          </li>
+          📁 Using it
+          <li>
+            <pre>
+const { data, loading } = useFetch("https://jsonplaceholder.typicode.com/users");
+
+if (loading) return <p>Loading...</p>;
+
+return (
+  &lt;&gt;
+    {data.map(user => (
+      &lt;p key={user.id}&gt;{user.name}&lt;/p&gt;
+    ))}
+  &lt;/&gt;
+);
+
+            </pre>
+          </li>
+        </ul>
+      </ul>
+      <ul>
+        <li><h1>⭐ Custom Hook Example: useLocalStorage</h1></li>
+        <ul>
+          📁 useLocalStorage.js
+          <li>
+            <pre>
+import { useState } from "react";
+
+export function useLocalStorage(key, initialValue) {
+  const [value, setValue] = useState(() => {
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : initialValue;
+  });
+
+  const updateValue = newValue => {
+    setValue(newValue);
+    localStorage.setItem(key, JSON.stringify(newValue));
+  };
+
+  return [value, updateValue];
+}
+
+          </pre
+            >
+          </li>
+        </ul>
+        <ul>
+          <li><h1>🎁 Why Custom Hooks are Powerful</h1></li>
+          <ul>
+            <li>
+              <pre>
+They allow you to extract logic like:
+
+Fetching data
+
+Form handling
+
+Dark/light theme
+
+Validation
+
+Authentication logic
+
+Window size detection
+
+Scroll position
+
+Debouncing, throttling
+
+…into reusable units you can use like regular hooks.</pre
+              >
+            </li>
+          </ul>
+        </ul>
+        <ul>
+          <li><h1>⭐ Simple Explanation</h1></li>
+          <li>
+            Custom Hook = A reusable hook that stores common logic in one place.
+          </li>
+        </ul>
+      </ul>
+      <ul>
+        <li><h1>🚀 Top 10 Most Useful Custom Hooks</h1></li>
+
+        <ul>
+          <li><h3>1️⃣ useToggle (Boolean toggle)</h3></li>
+          <li>
+            Used for: opening/closing modals, dropdowns, dark/light mode, menus.
+          </li>
+          <li>
+            <pre>
+export function useToggle(initial = false) {
+  const [value, setValue] = useState(initial);
+  const toggle = () => setValue(prev => !prev);
+  return [value, toggle];
+}
+
+            </pre>
+          </li>
+          <li><h3>2️⃣ useFetch (API calls)</h3></li>
+          <li>
+            <pre>
+export function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(url)
+      .then(res => res.json())
+      .then(json => {
+        setData(json);
+        setLoading(false);
+      });
+  }, [url]);
+
+  return { data, loading };
+}
+
+
+          </pre
+            >
+          </li>
+          <li><h3>3️⃣ useLocalStorage (store data permanently)</h3></li>
+          <li>
+            <pre>
+export function useLocalStorage(key, initial) {
+  const [value, setValue] = useState(() => {
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : initial;
+  });
+
+  const update = (newValue) => {
+    setValue(newValue);
+    localStorage.setItem(key, JSON.stringify(newValue));
+  };
+
+  return [value, update];
+}
+
+
+          </pre
+            >
+          </li>
+          <li><h3>4️⃣ useDebounce (delay input actions)</h3></li>
+          <li>
+            <h4>Perfect for search boxes, filtering, API calls on typing.</h4>
+          </li>
+          <li>
+            <pre>
+export function useDebounce(value, delay = 500) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debounced;
+}
+
+
+            </pre>
+          </li>
+          <li><h3>5️⃣ usePrevious (get previous state value)</h3></li>
+          <li>
+            <pre>
+export function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
+
+
+          </pre
+            >
+          </li>
+          <li><h3>6️⃣ useWindowSize (get screen width & height)</h3></li>
+          <li>
+            <pre>
+export function useWindowSize() {
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    const handler = () => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+
+  return size;
+}
+
+
+          </pre
+            >
+          </li>
+          <li>
+            <h3>7️⃣ useClickOutside (detect clicks outside an element)</h3>
+          </li>
+          <li>Used for modals, dropdowns, tooltips.</li>
+          <li>
+            <pre>
+export function useClickOutside(ref, callback) {
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        callback();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [ref, callback]);
+}
+
+
+            </pre>
+          </li>
+          <li><h3>8️⃣ useOnlineStatus (check internet connectivity)</h3></li>
+          <li>
+            <pre>
+export function useOnlineStatus() {
+  const [online, setOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const goOnline = () => setOnline(true);
+    const goOffline = () => setOnline(false);
+
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+
+    return () => {
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
+  }, []);
+
+  return online;
+}
+
+
+          </pre
+            >
+          </li>
+          <li><h3>9️⃣ useClipboard (copy text to clipboard)</h3></li>
+          <li>
+            <pre>
+export function useClipboard() {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async (text) => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
+  return { copied, copy };
+}
+
+
+          </pre
+            >
+          </li>
+          <li><h3>🔟 useTimeout (run code after delay)</h3></li>
+          <li>
+            <pre>
+export function useTimeout(callback, delay) {
+  useEffect(() => {
+    const timer = setTimeout(callback, delay);
+    return () => clearTimeout(timer);
+  }, [callback, delay]);
+}
+
+
+          </pre
+            >
+          </li>
+          <li><h3>🌙 1️⃣ useDarkMode (Toggle Dark / Light theme)</h3></li>
+          <li>
+            <pre>
+import { useEffect, useState } from "react";
+
+export function useDarkMode() {
+  const [dark, setDark] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [dark]);
+
+  const toggle = () => setDark(prev => !prev);
+
+  return [dark, toggle];
+}
+
+
+            </pre>
+          </li>
+          <li><h3>🖱️ 2️⃣ useHover (Detect hover on any element)</h3></li>
+          <li>
+            <pre>
+import { useState, useRef, useEffect } from "react";
+
+export function useHover() {
+  const [hovered, setHovered] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    const handleEnter = () => setHovered(true);
+    const handleLeave = () => setHovered(false);
+
+    node.addEventListener("mouseenter", handleEnter);
+    node.addEventListener("mouseleave", handleLeave);
+
+    return () => {
+      node.removeEventListener("mouseenter", handleEnter);
+      node.removeEventListener("mouseleave", handleLeave);
+    };
+  }, []);
+
+  return [ref, hovered];
+}
+
+
+          </pre
+            >
+          </li>
+          <li>
+            <h3>
+              👁 3️⃣ useIntersectionObserver (Detect element visibility on screen)
+            </h3>
+          </li>
+          <li>Perfect for animations, lazy-loading, infinite scroll.</li>
+          <li>
+            <pre>
+import { useEffect, useRef, useState } from "react";
+
+export function useIntersectionObserver(options) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      setVisible(entry.isIntersecting);
+    }, options);
+
+    if (ref.current) observer.observe(ref.current);
+
+    return () => observer.disconnect();
+  }, [options]);
+
+  return [ref, visible];
+}
+
+
+          </pre
+            >
+          </li>
+          <li>
+            <h3>🎧 4️⃣ useEventListener (Attach any event listener easily)</h3>
+          </li>
+          <li>
+            <pre>
+import { useEffect } from "react";
+
+export function useEventListener(event, handler, element = window) {
+  useEffect(() => {
+    if (!element) return;
+
+    element.addEventListener(event, handler);
+
+    return () => {
+      element.removeEventListener(event, handler);
+    };
+  }, [event, handler, element]);
+}
+
+
+            </pre>
+            Using it:
+            <pre>
+useEventListener("resize", () => console.log("resized!"));
+</pre
+            >
+          </li>
+          <li>
+            <h3>📜 5️⃣ useScrollPosition (Get scroll position of page)</h3>
+          </li>
+          <li>
+            <pre>
+import { useEffect, useState } from "react";
+
+export function useScrollPosition() {
+  const [scroll, setScroll] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScroll({
+        x: window.scrollX,
+        y: window.scrollY,
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // initial
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return scroll;
+}
+
+
+          </pre
+            >
+          </li>
+        </ul>
+      </ul>
+    </ul>
+    <ul>
+      <li><h1>📁 Folder Structure for Custom Hooks</h1></li>
+      <ul>
+        <li>Here is the recommended structure:</li>
+        <li>
+          <pre>
+src/
+ ├── hooks/
+ │     ├── useToggle.js
+ │     ├── useFetch.js
+ │     ├── useLocalStorage.js
+ │     ├── useDebounce.js
+ │     ├── usePrevious.js
+ │     ├── useWindowSize.js
+ │     ├── useClickOutside.js
+ │     ├── useOnlineStatus.js
+ │     ├── useClipboard.js
+ │     ├── useTimeout.js
+ │     ├── useDarkMode.js
+ │     ├── useHover.js
+ │     ├── useIntersectionObserver.js
+ │     ├── useEventListener.js
+ │     └── useScrollPosition.js
+ │
+ ├── components/
+ ├── pages/
+ ├── App.js
+ └── index.js
+
+
+        </pre
+          >
+        </li>
+        <li>
+          <pre>
+All hooks inside src/hooks/
+✔ All files start with use*
+✔ Easy to import like:
+
+import { useDarkMode } from "./hooks/useDarkMode";
+
+
+        </pre
+          >
+        </li>
+      </ul>
+    </ul>
+
+    <ul>
+      <li>
+        <h1>✅ React Hooks Comparison Table</h1>
+      </li>
+      <ul>
+        <li>
+          <pre>
+| Hook                                | Type                | What It Does                                              | When To Use                                    |
+| ----------------------------------- | ------------------- | --------------------------------------------------------- | ---------------------------------------------- |
+| **useState**                        | State               | Stores and updates local component state                  | Forms, counters, UI toggles                    |
+| **useReducer**                      | State (Advanced)    | Manages complex state using reducer function              | Multiple state operations, complex logic       |
+| **useEffect**                       | Side-Effects        | Runs code after render (API calls, timers, subscriptions) | Fetch data, update DOM, sync with localStorage |
+| **useLayoutEffect**                 | Side-Effects (Sync) | Runs *before* paint (synchronous)                         | Measure DOM size before screen updates         |
+| **useContext**                      | Context             | Reads shared global data                                  | Theme, Auth, Language state                    |
+| **useRef**                          | Reference           | Stores mutable values that don’t re-render                | DOM access, store previous values              |
+| **useMemo**                         | Performance         | Memoizes a **value**                                      | Heavy calculations, filtering large lists      |
+| **useCallback**                     | Performance         | Memoizes a **function**                                   | Prevent unnecessary child re-renders           |
+| **useId**                           | Utility             | Generates unique IDs                                      | Form elements, accessibility labels            |
+| **useTransition**                   | Concurrent UI       | Makes UI feel responsive while running long tasks         | Search filtering, list rendering               |
+| **useDeferredValue**                | Concurrent UI       | Delays updating a value to avoid lag                      | Live search, input-heavy UI                    |
+| **useImperativeHandle**             | Advanced/Refs       | Customizes ref value for parent components                | Forwarding custom methods                      |
+| **useDebugValue**                   | Custom Hooks Dev    | Adds labels for custom hooks in React DevTools            | Debugging custom hooks                         |
+| **useSyncExternalStore**            | External State      | Subscribe to external stores safely                       | Redux/ Zustand store reading                   |
+| **useErrorBoundary** (future/ libs) | Error Handling      | Catch errors in components                                | Safe UI crash handling                         |
+
+
+          </pre>
+        </li>
+        <li><h1>🎁 Bonus: Custom Hook Examples Included Earlier</h1></li>
+        <li>
+          <pre>
+| Custom Hook                 | What It Does                                    |
+| --------------------------- | ----------------------------------------------- |
+| **useDarkMode**             | Toggle light/dark theme + saves to localStorage |
+| **useHover**                | Detect when user is hovering on an element      |
+| **useIntersectionObserver** | Detect when an element comes into view          |
+| **useEventListener**        | Add/remove event listeners safely               |
+| **useScrollPosition**       | Track page scroll Y position                    |
+
+
+          </pre>
+        </li>
+      </ul>
+    </ul>
+    <ul>
+      <li><h1>React Router</h1></li>
+      <li>
+        <a href="https://reactrouter.com/" target="_blank"
+          >https://reactrouter.com/</a
+        >
+      </li>
+      <ul>
+        <li>Installation : Use npm install react-router-dom</li>
+        <li>We are going to use the latest version which is 6+</li>
+        <li>RouterProvider : Wraps the app for routing capabilities.</li>
+        <li>
+          createBrowserRouter: helps creating the mapping for router provider
+        </li>
+        <li>Declarative Routing: Easily define application routes.</li>
+        <li>Routes are React components</li>
+        <ul>
+          <li><h1>What is React Router?</h1></li>
+          <ul>
+            <li>
+              React Router is a library used in React to create multiple pages
+              (routes) inside a single-page application (SPA).
+            </li>
+            <li>No full page reload</li>
+            <li>✔ Fast navigation</li>
+            <li>✔ URL-based routing</li>
+            <li>✔ Works like pages in a normal website</li>
+            <li><h2>📦 Install React Router</h2></li>
+            <li>npm install react-router-dom</li>
+            <ul>
+              <li><h2>🧩 Basic Setup</h2></li>
+              <ul>
+                <li><h3>1. Import BrowserRouter, Routes, Route</h3></li>
+                <li>
+                  <pre>
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./Home";
+import About from "./About";
+import Contact from "./Contact";
+
+function App() {
+  return (
+    &lt;BrowserRouter&gt;
+      &lt;Routes&gt;
+        &lt;Route path="/" element={&lt;Home /&gt;} /&gt;
+        &lt;Route path="/about" element={&lt;About /&gt;} /&gt;
+        &lt;Route path="/contact" element={&lt;Contact /&gt;} /&gt;
+      &lt;/Routes&gt;
+    &lt;/BrowserRouter&gt;
+  );
+}
+
+export default App;
+
+
+                </pre
+                  >
+                </li>
+                <li>✔ BrowserRouter → enables routing</li>
+                <li>✔ Routes → wrapper for route list</li>
+                <li>✔ Route → represents a page</li>
+              </ul>
+            </ul>
+            <ul>
+              <li><h2>🧭 Navigation (Link Component)</h2></li>
+              <ul>
+                <li>
+                  Use &lt;Link&gt; instead of &lt;a&gt; to avoid page reload.
+                </li>
+                <li>
+                  <pre>
+import { Link } from "react-router-dom";
+
+function Navbar() {
+  return (
+    &lt;&gt;
+      &lt;Link to="/"&gt;Home&lt;/Link&gt;
+      &lt;Link to="/about"&gt;About&lt;/Link&gt;
+      &lt;Link to="/contact"&gt;Contact&lt;/Link&gt;
+    &lt;/&gt;
+  );
+}
+
+
+                </pre
+                  >
+                </li>
+              </ul>
+              <li><h2>🔄 useNavigate (Programmatic Navigation)</h2></li>
+              <ul>
+                <li>Navigate using JavaScript.</li>
+                <li>
+                  <pre>
+import { useNavigate } from "react-router-dom";
+
+function Login() {
+  const navigate = useNavigate();
+
+  function handleLogin() {
+    // after login success
+    navigate("/dashboard");
+  }
+
+  return <button onClick={handleLogin}>Login</button>;
+}
+
+
+                  </pre>
+                </li>
+              </ul>
+            </ul>
+            <ul>
+              <li><h1>Dynamic Routes</h1></li>
+              <li>
+                <pre>
+Useful for pages like:
+✔ Product/:id
+✔ User/:id
+✔ Blog/:slug
+
+                </pre>
+              </li>
+              <li>
+                <h3>
+                  Route setup: &lt;Route path="/user/:id" element="{&lt;User"
+                  /&gt;} /&gt;
+                </h3>
+              </li>
+              <li><h3>Read dynamic params:</h3></li>
+              <li>
+                <pre>
+import { useParams } from "react-router-dom";
+
+function User() {
+  const { id } = useParams();
+  return &lt;h1&gt;User ID: {id}&lt;/h1&gt;;
+}
+
+
+                </pre>
+              </li>
+              <li><h3>🔁 Nested Routes</h3></li>
+              <li>
+                <pre>
+&lt;Route path="/dashboard" element={&lt;Dashboard /&gt;}&gt;
+  &lt;Route path="profile" element={&lt;Profile /&gt;} /&gt;
+  &lt;Route path="settings" element={&lt;Settings /&gt;} /&gt;
+&lt;/Route&gt;
+
+
+                </pre>
+              </li>
+              <li><h3>Outlet (to show nested routes)</h3></li>
+              <li>
+                <pre>
+import { Outlet } from "react-router-dom";
+
+function Dashboard() {
+  return (
+    &lt;&gt;
+      &lt;h1&gt;Dashboard&lt;/h1&gt;
+      &lt;Outlet /&gt; {/* Renders child routes */}
+    &lt;/&gt;
+  );
+}
+
+
+                </pre>
+              </li>
+              <li><h3>🛑 404 Page (Not Found Route)</h3></li>
+              <li>
+                <pre>
+  &lt;Route path="*" element={&lt;h1&gt;404 - Page Not Found&lt;/h1&gt;} /&gt;
+
+              </pre
+                >
+              </li>
+              <li><h3>📦 Protected Routes (Private Routes)</h3></li>
+              <li>Used for authentication.</li>
+              <li>
+                <pre>
+function PrivateRoute({ children }) {
+  const isLoggedIn = false; // your auth logic
+  return isLoggedIn ? children : &lt;Navigate to="/login" /&gt;;
+}
+
+Usage:
+&lt;Route path="/dashboard" element={&lt;PrivateRoute&gt;&lt;Dashboard /&gt;&lt;/PrivateRoute&gt;} /&gt;
+
+
+                </pre>
+              </li>
+            </ul>
+          </ul>
+        </ul>
+      </ul>
+    </ul>
+
+    <ul>
+      <li><h1>🎁 Summary Table (React Router)</h1></li>
+      <ul>
+        <li>
+          <pre>
+| Feature               | Hook/Component    | Use                   |
+| --------------------- | ----------------- | --------------------- |
+| Routing               | `&lt;BrowserRouter&gt;` | Enables routing       |
+| Define Pages          | `&lt;Route&gt;`         | Create routes         |
+| Navigate              | `&lt;Link&gt;`          | With UI               |
+| Programmatic Navigate | `useNavigate()`   | Navigate in JS        |
+| Dynamic Params        | `useParams()`     | Read URL data         |
+| Nested Routes         | `&lt;Outlet&gt;`        | Show children routes  |
+| 404 Page              | `path="*"`        | Catch-all route       |
+| Protected Routes      | `&lt;Navigate&gt;`      | Auth-based navigation |
+
+
+          </pre>
+        </li>
+      </ul>
+    </ul>
+
+    <ul>
+      <li><h1>Layout Routes</h1></li>
+      <ul>
+        <li>
+          <pre>
+            export default function Router()preturn useRoutes([
+              { path: "/", element: &lt;Home /&gt; },
+             children: [
+               {
+                 path: "/",
+                 element: &lt;PostList /&gt;,
+              },
+              {
+                 path: "/create-post",
+                 element: &lt;CreatePost /&gt;,
+               },
+             ]
+            ])
+
+            1. Layout routes help us to use shared elements - create in main component
+            2. Outlet component is used to render the children at the correct places - used in App component
+          </pre>
+        </li>
+      </ul>
+    </ul>
+
+    <ul>
+      <li><h1>Route Links</h1></li>
+      <ul>
+        <li>
+          <pre>
+            import { useNavigate} from "react-router-dom";
+
+            const Component = () =>{
+              const navigate = useNavigate();
+              return(
+                &lt;button onClick={()=&gt; navigate("/dashboard")}&gt;Dashboard&lt;/button&gt;
+              )
+            }
+
+            1. &lt;Link&gt; component with "to" property can be used to avoid realoding. this is used in SidebarNew component
+            2. useNavigate() hook can be used to do navigation programmatically. this is used in CreatePost component after add a new post
+          </pre>
+        </li>
+      </ul>
+    </ul>
+
+    <ul>
+      <li><h1>Data fetching using loader</h1></li>
+      <ul>
+        <li>
+          Loader method can be used to load data before a particular route is
+          executed
+        </li>
+        <li>
+          The Loader method must return the data that is loaded or promise
+        </li>
+        <li>Data is available in component and all the child components.</li>
+        <li>useLoaderData hook can be used to get the fetched data.</li>
+        <li>Loading state can also be used</li>
+      </ul>
+    </ul>
+
+    <ul>
+      <li>loader</li>
+      <li>
+        Loader method can be used to load data before a particular route is
+        executed
+      </li>
+      <li>The Loader method must return the data that is loaded or promise</li>
+      <li>Data is available in component and all the child components.</li>
+      <li>useLoaderData</li>
+      <li>is used to get the data from loader method in component</li>
+    </ul>
+
+    <ul>
+      <li><h1>Submitting Data using action</h1></li>
+      <ul>
+        <li>
+          Action method can be used to perform an action on submission of forms.
+        </li>
+        <li>
+          Custom Form component need to be used along with name attribute for
+          all inputs.
+        </li>
+        <li>
+          Action function will get an data object. to generate correct request
+          object method="post" attribute should be used.
+        </li>
+        <li>
+          Data.request.formData() method can be used to get form data object
+        </li>
+
+        <li>
+          Object.fromEntries(formFata) can be used to get actual input data.
+        </li>
+        <li>
+          redirect() response can be returned for navigation after submission
+        </li>
+      </ul>
+    </ul>
+
+    <ul>
+      <li>
+        <h1>What is Redux</h1>
+      </li>
+      <ul>
+        <li>State management for cross component or app-wide state</li>
+        <li>
+          Redux is a predictable state management library for JavaScript apps
+        </li>
+        <li>Local State vs Cross-component state vs App-Wide state</li>
+        <li>
+          useState or useReducer vs useState with prop drilling vs useState or
+          useCOntext or Redux
+        </li>
+      </ul>
+      <ul>
+        <li><h1>What is Redux?</h1></li>
+        <ul>
+          <li>
+            Redux is a state management library for JavaScript applications
+            (mainly used with React).
+          </li>
+          <li>It helps you manage:</li>
+          <ul>
+            <li>✔ Global state</li>
+            <li>✔ Shared data</li>
+            <li>✔ Data used across multiple components</li>
+          </ul>
+          <li>It keeps all global data in one central store.</li>
+        </ul>
+        <ul>
+          <li><h1>Why Redux?</h1></li>
+          <ul>
+            <li>React components manage local state using useState, but…</li>
+            <ul>
+              <li>❌ Hard when the same state is needed in many components</li>
+              <li>❌ Passing props through multiple levels becomes messy</li>
+              <li>❌ Complex apps need organized state</li>
+            </ul>
+            <li>Redux solves this by providing:</li>
+            <ul>
+              <li>✔ Central Store</li>
+              <li>✔ Predictable state updates</li>
+              <li>✔ Easy debugging</li>
+              <li>✔ Consistent data flow</li>
+            </ul>
+          </ul>
+        </ul>
+      </ul>
+      <ul>
+        <li><h1>The 3 Core Concepts of Redux</h1></li>
+        <ul>
+          <li>
+            <pre>
+| Concept     | Meaning                                     | Example                       |
+| ----------- | ------------------------------------------- | ----------------------------- |
+| **Store**   | Central place where the entire state lives  | All app data                  |
+| **Action**  | Object that describes **what** happened     | `{ type: "ADD_TODO" }`        |
+| **Reducer** | Function that decides **how** state changes | `(state, action) => newState` |
+
+
+          </pre
+            >
+          </li>
+        </ul>
+        <ul>
+          <li><h1>Redux Data Flow</h1></li>
+          <ul>
+            <li>
+              <pre>
+              Redux follows a one-way cycle:
+              UI → dispatch(action) → reducer → updates store → UI re-renders
+
+
+              Simple and predictable!
+            </pre
+              >
+            </li>
+            <li><h1>🧩 Redux Example (Very Simple)</h1></li>
+            Step 1: Create a Store
+            <ul>
+              <li>
+                <pre>
+import { configureStore } from "@reduxjs/toolkit";
+import counterReducer from "./counterSlice";
+
+export const store = configureStore({
+  reducer: {
+    counter: counterReducer,
+  },
+});
+
+
+            </pre
+                >
+              </li>
+            </ul>
+            <ul>
+              <li><h1>Using Redux Toolkit (Modern Redux)</h1></li>
+              <ul>
+                <li>
+                  Redux Toolkit (RTK) is the official, recommended way to use
+                  Redux.
+                </li>
+                <li>It makes Redux:</li>
+                <ul>
+                  <li>✔ Easier</li>
+                  <li>✔ Shorter</li>
+                  <li>✔ Less boilerplate</li>
+                </ul>
+              </ul>
+              <ul>
+                <li><h1>🧱 Example Using Redux Toolkit Slice</h1></li>
+                counterSlice.js
+                <ul>
+                  <li>
+                    <pre>
+import { createSlice } from "@reduxjs/toolkit";
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: { value: 0 },
+  reducers: {
+    increment: (state) => { state.value += 1 },
+    decrement: (state) => { state.value -= 1 },
+    reset: (state) => { state.value = 0 },
+  },
+});
+
+export const { increment, decrement, reset } = counterSlice.actions;
+export default counterSlice.reducer;
+
+
+                  </pre
+                    >
+                  </li>
+                  <li><h2>Step 2: Wrap App with Provider</h2></li>
+                  <ul>
+                    <li>
+                      <pre>
+import { Provider } from "react-redux";
+import { store } from "./store";
+import App from "./App";
+
+&lt;Provider store={store}&gt;
+  &lt;App /&gt;
+&lt;/Provider&gt;;
+
+
+                      </pre>
+                    </li>
+                  </ul>
+                  <li><h2>📌 Step 3: Use Redux Data in Components</h2></li>
+                  <ul>
+                    Read Data → useSelector()
+                    <li>
+                      <pre>
+import { useSelector } from "react-redux";
+
+const value = useSelector((state) =&gt; state.counter.value);
+
+                      </pre>
+                    </li>
+                    Update Data → useDispatch()
+                    <li>
+                      <pre>
+import { useDispatch } from "react-redux";
+import { increment } from "./counterSlice";
+
+const dispatch = useDispatch();
+
+&lt;button onClick={() =&gt; dispatch(increment())}&gt;+&lt;/button&gt;;
+
+
+                      </pre>
+                    </li>
+                  </ul>
+                </ul>
+              </ul>
+            </ul>
+          </ul>
+        </ul>
+      </ul>
+      <ul>
+        <li><h1>Summary Table (Redux)</h1></li>
+        <ul>
+          <li>
+            <pre>
+| Topic        | Meaning                                  |
+| ------------ | ---------------------------------------- |
+| **Store**    | Centralized global state                 |
+| **Action**   | Describes what to do                     |
+| **Reducer**  | Updates state based on action            |
+| **Dispatch** | Sends actions                            |
+| **Selector** | Reads data from store                    |
+| **Slice**    | RTK feature containing reducer + actions |
+| **Provider** | Makes store available to React           |
+| **RTK**      | Modern, simplified Redux                 |
+
+
+          </pre
+            >
+          </li>
+        </ul>
+        <li><h1>🔥 When should you use Redux?</h1></li>
+        <ul>
+          <li>
+            <pre>
+Use Redux when your app has:
+
+✔ Global authentication state
+✔ Large forms
+✔ Theme settings
+✔ Cart system (e-commerce)
+✔ Chat app messaging
+✔ Multiple components sharing same data
+✔ Complex API interaction
+
+Many components share state
+
+State logic is complex
+
+You need API fetching tools
+
+You want debugging tools
+
+Scaling app in future
+
+Redux has great performance
+
+Don't use Redux for small apps.
+
+          </pre
+            >
+          </li>
+        </ul>
+      </ul>
+    </ul>
+
+    <ul>
+      <li><h1>How Redux Works</h1></li>
+      <ul>
+        <li>
+          Single Source: Uses a single central store to maintain the entire
+          application's state
+        </li>
+        <li>
+          Action: COmponents never directly change the store. changes to state
+          are made through dispatched actions, which describe events.
+        </li>
+        <li>
+          Reducers: Actions are processed by reducers, pure functions that
+          return the new state.
+        </li>
+        <li>
+          Immutable: State is immutable ; every change results in a new state
+          object
+        </li>
+        <li>This is different from useReducer hook</li>
+      </ul>
+    </ul>
+
+    <ul>
+      <li><h1>Redux vs useContext</h1></li>
+      <ul>
+        <li>
+          <pre>
+| Feature                    | **useContext**                             | **Redux**                             |
+| -------------------------- | ------------------------------------------ | ------------------------------------- |
+| **Purpose**                | Share data between components              | Manage complex global state           |
+| **Best For**               | Small apps, simple global state            | Large apps, complex state logic       |
+| **State Storage**          | React component tree                       | Independent central **Store**         |
+| **How State Updates**      | `useState` or `useReducer` inside provider | Reducers + Actions                    |
+| **Performance**            | Can cause unnecessary re-renders           | Highly optimized (RTK)                |
+| **Tools Available**        | Very limited                               | DevTools, middleware, RTK Query       |
+| **Setup Complexity**       | Very easy                                  | More setup                            |
+| **Scalability**            | Low to Medium                              | High                                  |
+| **Boilerplate**            | Minimal                                    | More (but RTK reduces it)             |
+| **Async Operations (API)** | Manual handling                            | Built-in tools (RTK Thunk, RTK Query) |
+| **Debugging**              | Hard for large apps                        | Excellent DevTools                    |
+| **Predictability**         | Depends on your logic                      | Very predictable (pure reducers)      |
+
+
+          </pre>
+        </li>
+      </ul>
+    </ul>
+  </body>
+</html>
